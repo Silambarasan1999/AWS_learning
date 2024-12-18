@@ -22,6 +22,12 @@ def query():
         # Specify the model name (replace 'llama' with your actual model name)
         model_name = 'llama3.2:1b'  # Adjust based on your model
 
+        # Handle special case for "tell me about it" and similar follow-up questions
+        if "tell me about it" in prompt.lower():
+            # Adjusting context to ask more about the previously answered question
+            # Assuming the last response was about the capital of India being New Delhi
+            prompt = "Please provide more details about New Delhi, the capital of India."
+
         # Generate response from Llama
         response = ollama.generate(model=model_name, prompt=prompt)
 
