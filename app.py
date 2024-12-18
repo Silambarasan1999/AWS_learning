@@ -38,10 +38,14 @@ def query():
         # Append the new prompt to the conversation history
         conversation_history[user_id].append({"role": "user", "content": prompt})
 
-        # Build the full conversation context
+        # If this is a follow-up question (e.g., "Tell me about it"), we should generate context
         context = "\n".join(
             f"{entry['role']}: {entry['content']}" for entry in conversation_history[user_id]
         )
+
+        # If the user is asking for an explanation (e.g., "Tell me about it"), we can provide more detailed context
+        if "tell me about it" in prompt.lower():
+            context += "\nllama: Can you elaborate on that?"
 
         # Specify the model name (replace 'llama' with your actual model name)
         model_name = 'llama3.2:1b'  # Adjust based on your model
