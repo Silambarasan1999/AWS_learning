@@ -41,13 +41,15 @@
             text-align: left;
             color: green;
         }
-        button {
+        input[type="text"], button {
             font-size: 16px;
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 4px;
             border: 1px solid #ccc;
             width: 100%;
+        }
+        button {
             background-color: #28a745;
             color: white;
             cursor: pointer;
@@ -60,6 +62,8 @@
 <body>
     <div class="container">
         <h2>Chat with API</h2>
+        <!-- API URL Input -->
+        <input type="text" id="api-url" placeholder="Enter API URL (e.g., http://localhost:5000/query)" />
         <!-- Chat Box -->
         <div class="chat-box" id="chat-box">
             <!-- Chat messages will appear here -->
@@ -72,23 +76,26 @@
 
     <script>
         async function sendMessage() {
+            const apiUrl = document.getElementById('api-url').value.trim();
             const prompt = document.getElementById('user-prompt').value.trim();
             const chatBox = document.getElementById('chat-box');
-
-            // Hardcoded API URL (Replace this with your actual API URL)
-            const apiUrl = 'http://localhost:5000/query';
-
+    
+            if (!apiUrl) {
+                alert("Please enter the API URL.");
+                return;
+            }
+    
             if (!prompt) {
                 alert("Please enter your message.");
                 return;
             }
-
+    
             // Append user message to the chat box
             const userMessage = document.createElement('div');
             userMessage.className = 'message user';
             userMessage.textContent = `You: ${prompt}`;
             chatBox.appendChild(userMessage);
-
+    
             try {
                 // Send the prompt to the API
                 const response = await fetch(apiUrl, {
@@ -98,11 +105,11 @@
                     },
                     body: JSON.stringify({ prompt: prompt }),
                 });
-
+    
                 const data = await response.json();
-
+    
                 // Append API response to the chat box
-                const apiMessage = document.createElement('div');
+                const apiMessage = document.createElement('div'); // Define apiMessage here
                 apiMessage.className = 'message response';
                 apiMessage.textContent = `API: ${data.response || data.error || "No response"}`;
                 chatBox.appendChild(apiMessage);
@@ -113,12 +120,12 @@
                 errorMessage.textContent = `Error: ${error.message}`;
                 chatBox.appendChild(errorMessage);
             }
-
+    
             // Clear the user input box and scroll to the bottom
             document.getElementById('user-prompt').value = '';
             chatBox.scrollTop = chatBox.scrollHeight;
         }
     </script>
-
+    
 </body>
 </html>
