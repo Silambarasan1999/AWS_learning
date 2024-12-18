@@ -33,19 +33,21 @@ def query():
 
         # Initialize conversation history for the user if not already done
         if user_id not in conversation_history:
-            conversation_history[user_id] = []
+            conversation_history[user_id] = {'user': [], 'llama': []}
 
-        # Append the new prompt to the conversation history
-        conversation_history[user_id].append({"role": "user", "content": prompt})
+        # Append the new user prompt to the conversation history
+        conversation_history[user_id]['user'].append(prompt)
 
-        # If this is a follow-up question (e.g., "Tell me about it"), we should generate context
-        context = "\n".join(
-            f"{entry['role']}: {entry['content']}" for entry in conversation_history[user_id]
-        )
+        # Build the full conversation context (only include the last user prompt and Llama's last response)
+        context = ""
+        if conversation_history[user_id]['llama']:
+            # Only take the last interaction
+            last_llama_response = conversation_history[user_id]['llama'][-1]
+            context = f"User: {conversation_history[user_id]['user'][-1]}\nLlama: {last_llama_response}"
 
-        # If the user is asking for an explanation (e.g., "Tell me about it"), we can provide more detailed context
+        # If the prompt is asking for more details, adjust the context accordingly
         if "tell me about it" in prompt.lower():
-            context += "\nllama: Can you elaborate on that?"
+            context = f"User: {conversation_history[user_id]['user'][-2]}\nLlama: {conversation_history[user_id]['llama'][-2]}\nUser: {prompt}"
 
         # Specify the model name (replace 'llama' with your actual model name)
         model_name = 'llama3.2:1b'  # Adjust based on your model
@@ -57,7 +59,7 @@ def query():
         response_text = response.response
 
         # Add the model's response to the conversation history
-        conversation_history[user_id].append({"role": "llama", "content": response_text})
+        conversation_history[user_id]['llama'].append(response_text)
 
         # Return the response as JSON
         return jsonify({"response": response_text})
