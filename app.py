@@ -3,7 +3,7 @@ from flask_cors import CORS
 import ollama 
 
 
-app = Flask(_name_)
+app = Flask(__name__)
 CORS (app)
 
 # A dictionary to store conversation history for each user/session
