@@ -20,6 +20,7 @@
             margin-bottom: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            resize: vertical;  /* Allow only vertical resizing */
         }
         .chat-box {
             height: 300px;
@@ -52,7 +53,7 @@
             color: white;
             cursor: pointer;
         }
-        button: hover {
+        button:hover {
             background-color: #218838;
         }
     </style>
@@ -67,7 +68,7 @@
         <!-- User Prompt Input -->
         <textarea id="user-prompt" placeholder="Type your message here..."></textarea>
         <!-- Submit Button -->
-        <button onclick="sendMessage()">Submit</button>
+        <button id="submit-btn" onclick="sendMessage()">Submit</button>
     </div>
 
     <script>
@@ -75,11 +76,16 @@
             const apiUrl = '/query';  // Use the local Flask route
             const prompt = document.getElementById('user-prompt').value.trim();
             const chatBox = document.getElementById('chat-box');
+            const submitButton = document.getElementById('submit-btn');
     
             if (!prompt) {
                 alert("Please enter your message.");
                 return;
             }
+    
+            // Change button text to "Loading..."
+            submitButton.textContent = "Loading...";
+            submitButton.disabled = true;  // Disable the button while waiting
     
             // Append user message to the chat box
             const userMessage = document.createElement('div');
@@ -100,7 +106,7 @@
                 const data = await response.json();
     
                 // Append API response to the chat box
-                const apiMessage = document.createElement('div'); // Define apiMessage here
+                const apiMessage = document.createElement('div');
                 apiMessage.className = 'message response';
                 apiMessage.textContent = `response: ${data.response || data.error || "No response"}`;
                 chatBox.appendChild(apiMessage);
@@ -112,7 +118,9 @@
                 chatBox.appendChild(errorMessage);
             }
     
-            // Clear the user input box and scroll to the bottom
+            // Reset button and clear input box
+            submitButton.textContent = "Submit";
+            submitButton.disabled = false;
             document.getElementById('user-prompt').value = '';
             chatBox.scrollTop = chatBox.scrollHeight;
         }
