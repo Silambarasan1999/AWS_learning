@@ -3,15 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat with Llama</title>
+    <title>Chat with API</title>
     <style>
-        /* Your existing styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .chat-box {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .user {
+            text-align: right;
+            color: blue;
+        }
+        .response {
+            text-align: left;
+            color: green;
+        }
+        button {
+            font-size: 16px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            width: 100%;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Chat with API</h2>
-        <!-- API URL Input (not needed anymore) -->
+        <!-- Chat Box -->
         <div class="chat-box" id="chat-box">
             <!-- Chat messages will appear here -->
         </div>
@@ -20,6 +69,7 @@
         <!-- Submit Button -->
         <button onclick="sendMessage()">Submit</button>
     </div>
+
     <script>
         async function sendMessage() {
             const apiUrl = '/query';  // Use the local Flask route
@@ -66,6 +116,7 @@
             document.getElementById('user-prompt').value = '';
             chatBox.scrollTop = chatBox.scrollHeight;
         }
-    </script>    
+    </script>  
+
 </body>
 </html>
