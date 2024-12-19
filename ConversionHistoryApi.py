@@ -24,7 +24,7 @@ def query():
         # Parse the JSON payload from the request
         data = request.get_json()
         user_id = data.get('user_id')  # Expect a consistent user_id from the client
-        
+
         # If no user_id is provided, default to a fixed identifier for testing (or generate one)
         if not user_id:
             user_id = "default_user"  # Replace with a consistent identifier for testing
@@ -61,10 +61,6 @@ def query():
             # Include the last interaction in the context
             last_llama_response = conversation_history[user_id]['llama'][-1]
             context = f"User: {conversation_history[user_id]['user'][-1]}\nLlama: {last_llama_response}"
-
-        # If the prompt is asking for more details, adjust the context accordingly
-        if "tell me about it" in prompt.lower() and len(conversation_history[user_id]['user']) > 1:
-            context = f"User: {conversation_history[user_id]['user'][-2]}\nLlama: {conversation_history[user_id]['llama'][-2]}\nUser: {prompt}"
 
         # Specify the model name (replace 'llama' with your actual model name)
         model_name = 'llama3.2:1b'  # Adjust based on your model
