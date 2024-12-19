@@ -90,7 +90,7 @@
             // Append user message to the chat box
             const userMessage = document.createElement('div');
             userMessage.className = 'message user';
-            userMessage.textContent = `user: ${prompt}`;
+            userMessage.textContent = `user: \n ${prompt}`;
             chatBox.appendChild(userMessage);
     
             try {
@@ -108,7 +108,7 @@
                 // Append API response to the chat box
                 const apiMessage = document.createElement('div');
                 apiMessage.className = 'message response';
-                apiMessage.textContent = `response: ${data.response || data.error || "No response"}`;
+                apiMessage.textContent = `response:\n ${data.response || data.error || "No response"}`;
                 chatBox.appendChild(apiMessage);
             } catch (error) {
                 // Handle errors
