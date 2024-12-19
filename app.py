@@ -11,7 +11,7 @@ conversation_history = {}
 
 @app.route('/')
 def index():
-    return render_template('index.html')  # Serve the HTML file
+    return render_template('index_1.html')  # Serve the HTML file
 
 @app.route('/query', methods=['POST'])
 @app.route('/query', methods=['POST'])
