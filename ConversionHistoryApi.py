@@ -53,15 +53,17 @@ def query():
         conversation_history[user_id]['user'].append(prompt)
         conversation_history[user_id]['timestamps'].append(current_time)
 
-        # Build the full conversation context (only include the last user prompt and Llama's last response)
-        context = ""
-        if conversation_history[user_id]['llama']:
-            # Only take the last interaction
+        # Build the full conversation context
+        if len(conversation_history[user_id]['llama']) == 0:
+            # First interaction; use only the user's prompt
+            context = f"User: {prompt}"
+        else:
+            # Include the last interaction in the context
             last_llama_response = conversation_history[user_id]['llama'][-1]
             context = f"User: {conversation_history[user_id]['user'][-1]}\nLlama: {last_llama_response}"
 
         # If the prompt is asking for more details, adjust the context accordingly
-        if "tell me about it" in prompt.lower():
+        if "tell me about it" in prompt.lower() and len(conversation_history[user_id]['user']) > 1:
             context = f"User: {conversation_history[user_id]['user'][-2]}\nLlama: {conversation_history[user_id]['llama'][-2]}\nUser: {prompt}"
 
         # Specify the model name (replace 'llama' with your actual model name)
