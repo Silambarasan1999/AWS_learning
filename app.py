@@ -14,11 +14,17 @@ def index():
     return render_template('index.html')  # Serve the HTML file
 
 @app.route('/query', methods=['POST'])
+@app.route('/query', methods=['POST'])
 def query():
     try:
         # Parse the JSON payload from the request
         data = request.get_json()
-        user_id = data.get('user_id', int(time.time()))  # Use a user_id to identify the user/session
+        user_id = data.get('user_id')  # Expect a consistent user_id from the client
+        
+        # If no user_id is provided, default to a fixed identifier for testing (or generate one)
+        if not user_id:
+            user_id = "default_user"  # Replace with a consistent identifier for testing
+
         prompt = data.get('prompt', '')
 
         if not prompt:

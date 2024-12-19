@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat with Llama</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+        textarea, input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;  /* Allow only vertical resizing */
+        }
+        .chat-box {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+        }
+        .message {
+            margin-bottom: 10px;
+        }
+        .user {
+            text-align: right;
+            color: blue;
+        }
+        .response {
+            text-align: left;
+            color: green;
+        }
+        button {
+            font-size: 16px;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            width: 100%;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Chat with Llama</h2>
+        <!-- User ID Input -->
+        <input id="user-id" type="text" placeholder="Enter your username..." />
+        <!-- Chat Box -->
+        <div class="chat-box" id="chat-box">
+            <!-- Chat messages will appear here -->
+        </div>
+        <!-- User Prompt Input -->
+        <textarea id="user-prompt" placeholder="Type your message here..."></textarea>
+        <!-- Submit Button -->
+        <button id="submit-btn" onclick="sendMessage()">Submit</button>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            const apiUrl = '/query';  // Use the local Flask route
+            const userId = document.getElementById('user-id').value.trim();
+            const prompt = document.getElementById('user-prompt').value.trim();
+            const chatBox = document.getElementById('chat-box');
+            const submitButton = document.getElementById('submit-btn');
+    
+            if (!userId) {
+                alert("Please enter your username.");
+                return;
+            }
+    
+            if (!prompt) {
+                alert("Please enter your message.");
+                return;
+            }
+    
+            // Change button text to "Loading..."
+            submitButton.textContent = "Loading...";
+            submitButton.disabled = true;  // Disable the button while waiting
+    
+            // Append user message to the chat box
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user';
+            userMessage.textContent = `User (${userId}):\n${prompt}`;
+            chatBox.appendChild(userMessage);
+    
+            try {
+                // Send the prompt and user_id to the API
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ user_id: userId, prompt: prompt }),
+                });
+    
+                const data = await response.json();
+    
+                // Append API response to the chat box
+                const apiMessage = document.createElement('div');
+                apiMessage.className = 'message response';
+                apiMessage.textContent = `Llama:\n${data.response || data.error || "No response"}`;
+                chatBox.appendChild(apiMessage);
+            } catch (error) {
+                // Handle errors
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'message response';
+                errorMessage.textContent = `Error: ${error.message}`;
+                chatBox.appendChild(errorMessage);
+            }
+    
+            // Reset button and clear input box
+            submitButton.textContent = "Submit";
+            submitButton.disabled = false;
+            document.getElementById('user-prompt').value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>  
+
+</body>
+</html>
