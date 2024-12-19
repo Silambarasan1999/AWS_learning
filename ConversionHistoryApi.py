@@ -2,12 +2,17 @@ from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import ollama
 import time
+import logging
 
 app = Flask(__name__)
 CORS(app)
 
 # A dictionary to store conversation history for each user/session
 conversation_history = {}
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 @app.route('/')
 def index():
@@ -39,10 +44,14 @@ def query():
 
         # Initialize conversation history for the user if not already done
         if user_id not in conversation_history:
-            conversation_history[user_id] = {'user': [], 'llama': []}
+            conversation_history[user_id] = {'user': [], 'llama': [], 'timestamps': []}
 
-        # Append the new user prompt to the conversation history
+        # Get the current timestamp
+        current_time = time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime())
+
+        # Append the new user prompt and timestamp to the conversation history
         conversation_history[user_id]['user'].append(prompt)
+        conversation_history[user_id]['timestamps'].append(current_time)
 
         # Build the full conversation context (only include the last user prompt and Llama's last response)
         context = ""
@@ -72,9 +81,42 @@ def query():
 
     except Exception as e:
         # Log error details for debugging
-        print("Error occurred:", str(e))
+        logger.error("Error occurred: %s", str(e))
         return jsonify({"error": str(e)}), 500
 
+@app.route('/users', methods=['GET'])
+def get_all_users():
+    try:
+        # Fetch the list of all user IDs
+        user_ids = list(conversation_history.keys())
+        return jsonify({"users": user_ids})
+
+    except Exception as e:
+        logger.error("Error occurred: %s", str(e))
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/history/<user_id>', methods=['GET'])
+def get_user_history(user_id):
+    try:
+        if user_id not in conversation_history:
+            return jsonify({"error": "User not found"}), 404
+
+        user_conversation = conversation_history[user_id]
+        history_with_timestamps = []
+
+        # Combine conversation history with timestamps
+        for i in range(len(user_conversation['user'])):
+            history_with_timestamps.append({
+                "timestamp": user_conversation['timestamps'][i],
+                "user_message": user_conversation['user'][i],
+                "llama_response": user_conversation['llama'][i] if i < len(user_conversation['llama']) else ""
+            })
+
+        return jsonify({"history": history_with_timestamps})
+
+    except Exception as e:
+        logger.error("Error occurred: %s", str(e))
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
