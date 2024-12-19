@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import ollama
+import time
 
 app = Flask(__name__)
 CORS(app)
@@ -17,7 +18,7 @@ def query():
     try:
         # Parse the JSON payload from the request
         data = request.get_json()
-        user_id = data.get('user_id', 'default')  # Use a user_id to identify the user/session
+        user_id = data.get('user_id', int(time.time()))  # Use a user_id to identify the user/session
         prompt = data.get('prompt', '')
 
         if not prompt:
