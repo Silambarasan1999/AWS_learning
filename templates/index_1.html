@@ -61,12 +61,12 @@
 <body>
     <div class="container">
         <h2>Chat with Llama</h2>
-        <!-- User ID Input -->
-        <input id="user-id" type="text" placeholder="Enter your username..." />
         <!-- Chat Box -->
         <div class="chat-box" id="chat-box">
             <!-- Chat messages will appear here -->
         </div>
+        <!-- User ID Input -->
+        <input id="user-id" type="text" placeholder="Enter your username..." />
         <!-- User Prompt Input -->
         <textarea id="user-prompt" placeholder="Type your message here..."></textarea>
         <!-- Submit Button -->
@@ -98,7 +98,7 @@
             // Append user message to the chat box
             const userMessage = document.createElement('div');
             userMessage.className = 'message user';
-            userMessage.textContent = `User (${userId}):\n${prompt}`;
+            userMessage.textContent = `${userId}:\n${prompt}`;
             chatBox.appendChild(userMessage);
     
             try {
